@@ -2,12 +2,14 @@ import sqlite3
 import json
 from pathlib import Path 
 from typing import List
+
 from mcp.server.fastmcp import FastMCP
 
+from app.domain.book import Book
+
 DATABASE_NAME = "bookslog"
-FILE_BASE_DIR = Path(__file__).resolve()
+FILE_BASE_DIR = Path(__file__).parent.resolve()
 DATABASE_PATH = f"{FILE_BASE_DIR}/{DATABASE_NAME}.db"
-print(f"DEBUG: Database path: {DATABASE_PATH}")
 
 # Initialize FastMCP server
 mcp = FastMCP(DATABASE_PATH)
@@ -71,27 +73,16 @@ def get_books_titles() -> List[str]:
     return rows
 
 @mcp.tool()
-def insert_book(
-        isbn: int,
-        title: str,
-        author: str,
-        pages_num: int
-) -> None:
+def insert_books(books: list[Book]) -> None:
     """
-    Insert new book in the database.
+    Insert new books in the database.
 
-    Args:
-        isbn: The book's ISBN.
-        title: The book's title.
-        author: The book's author.
-        pages_num: The books's number of pages.
+    Args: 
+        list[Book]: A list with all the books to be inserted.
 
     Returns:
         None
     """
-
-    conn = sqlite3.connect(DATABASE_PATH)
-    cur = conn.cursor()
 
     query="""
         INSERT INTO books (
@@ -99,10 +90,15 @@ def insert_book(
         ) VALUES (?, ?, ?, ?)
     """
 
-    cur.execute(query, (isbn, title, author, pages_num))
+    values = [
+        (book.isbn, book.title, book.author, book.pages_num)
+        for book in books
+    ]
 
-    conn.commit()
-    conn.close()
+    with sqlite3.connect(DATABASE_PATH) as conn:
+        cur = conn.cursor()
+        cur.executemany(query, values)
+        conn.commit()
 
 @mcp.tool()
 def delete_book(

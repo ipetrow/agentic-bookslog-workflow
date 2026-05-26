@@ -1,6 +1,6 @@
 import json
 
-from app.llm.models.models import (
+from .models.models import (
     ContextRoleItem, TextContent, FileContent, ContextToolOutputItem
 )
 
@@ -25,9 +25,6 @@ class OpenAIContextMapper:
         return serialized_content_items
 
     async def serialize_context_role_item(self, context_item: ContextRoleItem):
-
-        # TODO exception in case the instance is not ContextRoleItem
-
         serialized_content_items = await self._serialize_content_items(context_item.content)
 
         serialized_context_item = {
@@ -38,16 +35,13 @@ class OpenAIContextMapper:
         return serialized_context_item
 
     async def serialize_context_tool_output_item(self, context_item: ContextToolOutputItem) -> str:
-
-        # TODO exception in case the instance is not ContextToolOutputItem
-
         serialized_context_item = {
             "type": "function_call_output",
             "call_id": context_item.tool_call_id,
             "output": context_item.tool_output
         }
 
-        return json.dumps(serialized_context_item)
+        return serialized_context_item
     
     async def serialize_tools(self, available_tools: list) -> list:
         serialized_tools = [
@@ -61,7 +55,7 @@ class OpenAIContextMapper:
                         {"type": "object", "properties": {}}
                     )
             }
-            for tool in available_tools.tools
+            for tool in available_tools
         ]
 
         return serialized_tools

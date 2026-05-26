@@ -1,21 +1,10 @@
 import json
-
 from contextlib import AsyncExitStack
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
 
-from dataclasses import dataclass
-from enum import Enum
-
-class ItemType(Enum):
-    TOOL = "tool"
-    RESOURCE = "resource"
-
-@dataclass(frozen=True)
-class ItemKey:
-    type: ItemType
-    name: str
+from .models.models import ItemKey, ItemType, ToolCallResponse
 
 class MCPManager:
 
@@ -45,7 +34,6 @@ class MCPManager:
 
             await session.initialize()
 
-            print(f"DEBUG: _connect_to_server: about to map the server session {session}")
             await self._map_server_primitives_to_session(session)
             await self._notify_server_connection_successful(server_name, session)
 
@@ -58,7 +46,6 @@ class MCPManager:
             # tools
             tools_response = await session.list_tools()
             for tool in tools_response.tools:
-                print(f"DEBUG: _map_server_primitives_to_session: Mapping tool {tool.name} to session {session}")
                 self.sessions[ItemKey(ItemType.TOOL, tool.name)] = session
                     
             # resources
@@ -66,38 +53,37 @@ class MCPManager:
             if resources_response and resources_response.resources:
                 for resource in resources_response.resources:
                     resource_uri = str(resource.uri)
-                    print(f"DEBUG: _map_server_primitives_to_session: Mapping resource {resource_uri} to session {session}")
                     self.sessions[ItemKey(ItemType.RESOURCE, resource_uri)] = session
         
         except Exception as e:
             print(f"Error mapping the server primitives to the respective client session: {e}")
     
     async def _connect_to_servers(self):
-        print(f"DEBUG: Inside _connect_to_servers")
+        """Connects to all servers."""
+
         try:
-            with open("app/infra/server_config.json", "r") as file:
+            with open("app/api/server_config.json", "r") as file:
                 data = json.load(file)
             servers = data.get("servers", {})
-            print(f"DEBUG: _connect_to_servers > {servers}")
             for server_name, server_config in servers.items():
-                print(f"DEBUG: _connect_to_servers > Connecting to server {server_name}, {server_config}")
                 await self._connect_to_server(server_name, server_config)
 
-            for session_item in self.sessions:
-                print(f"DEBUG: _connect_to_servers > Session item: {session_item}")
         except Exception as e:
             raise RuntimeError(f"Error loading the server configuration file: {e}")
 
     async def get_tools(self) -> list:
         tools = []
 
-        for session in self.sessions.values():
-            tools.extend(await session.list_tools())
+        unique_sessions = set(self.sessions.values())
+
+        for session in unique_sessions:
+            tools_response = await session.list_tools()
+            tools.extend(tools_response.tools)
 
         return tools
     
-    async def call_tool(self, tool_name, tool_args):
-        session = self.sessions[tool_name]
+    async def call_tool(self, tool_name, tool_args) -> ToolCallResponse:
+        session = self.sessions[ItemKey(ItemType.TOOL, tool_name)]
 
         if not session:
             raise ValueError(f"No session found for tool with name: {tool_name}")
@@ -110,8 +96,7 @@ class MCPManager:
             content = f"Error: {e}"
             log = f"[{content}]"
 
-        # TODO Return an object not a Tuple
-        return (content, log)
+        return ToolCallResponse(content = content, log = log)
     
     async def get_resource(self, resource_uri: str) -> str:
         """

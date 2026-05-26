@@ -1,8 +1,9 @@
 import base64
 import os
+
 from mcp.server.fastmcp import FastMCP
 
-RECEIPTS_DIR = "app/infra/servers/receipts"
+RECEIPTS_DIR = "app/api/servers/files/receipts"
 RECEIPTS_FILE = "receipt-001.pdf"
 
 # Initialize FastMCP server

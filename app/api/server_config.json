@@ -1,0 +1,19 @@
+{
+    "servers": {
+        "database": {
+            "command": "uv",
+            "args": [
+                "run", 
+                "-m",
+                "app.api.servers.database.database_server"
+            ]
+        },
+        "files": {
+            "command": "uv",
+            "args": [
+                "run", 
+                "-m",
+                "app.api.servers.files.files_server"]
+        }
+    }
+}

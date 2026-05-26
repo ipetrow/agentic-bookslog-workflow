@@ -1,12 +1,12 @@
-
 from dataclasses import dataclass
 
 @dataclass
-class Tool:
-    name: str
-    args: str
+class FunctionCall:
+    tool_name: str
+    tool_args: str
+    call_id: str
 
 @dataclass
 class OpenAIResponse:
     response: str
-    function_call: Tool | None = None
+    function_call: FunctionCall | None = None

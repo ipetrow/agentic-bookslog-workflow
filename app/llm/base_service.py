@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 
-from app.llm.models.models import ContextItem
+from .models.models import ContextItem
 
 class LLMService(ABC):
 

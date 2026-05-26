@@ -1,9 +1,7 @@
 import asyncio
 
+from app.api.manager import MCPManager
 from app.workflow.input_books_workflow import InputBooksWorkflow
-
-from app.infra.manager import MCPManager
-
 from app.llm.openai_service import OpenAIService
 
 async def main():
