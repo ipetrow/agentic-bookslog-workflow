@@ -33,6 +33,16 @@ class OpenAIService(LLMService):
         self.context = []
 
     async def process(self, context_item: ContextItem, available_tools: list = None) -> OpenAIResponse:
+        """
+        Handles a request to the OpenAI API.
+
+        Args:
+            context_item: the context item which will be appened to the context history (contains e.g., prompt, tools response).
+            available_tools: the available tools the execution of which the LLM might request.
+
+        Returns:
+            The response from the OpenAI request. 
+        """
 
         item: ContextItem = None
         if isinstance(context_item, ContextRoleItem):

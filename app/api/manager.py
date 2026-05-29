@@ -20,6 +20,16 @@ class MCPManager:
         await self.exit_stack.aclose()
 
     async def _connect_to_server(self, server_name, server_config) -> ClientSession:
+        """
+        Established a MCP Client-Server connection.
+
+        Args:
+            server_name: the name of the server to which a connection will be stablished.
+            server_config: the server configuration information used for connecting to the server.
+        
+        Returns:
+            A client session.
+        """
         try:
             server_params = StdioServerParameters(**server_config)
             stdio_transport = await self.exit_stack.enter_async_context(
@@ -42,6 +52,12 @@ class MCPManager:
             raise RuntimeError(f"Error trying to connect to MCP Server {server_name}: {e}")
     
     async def _map_server_primitives_to_session(self, session: ClientSession):
+        """
+        Maps the available server primitives (tools, resources) to their respective client session.
+
+        Args:
+            session: The client session to which the server primitives will be mapped.
+        """
         try:
             # tools
             tools_response = await session.list_tools()
@@ -59,7 +75,7 @@ class MCPManager:
             print(f"Error mapping the server primitives to the respective client session: {e}")
     
     async def _connect_to_servers(self):
-        """Connects to all servers."""
+        """Reads the server configuration files and established all the MCP Client-Server connections."""
 
         try:
             with open("app/api/server_config.json", "r") as file:
@@ -72,6 +88,13 @@ class MCPManager:
             raise RuntimeError(f"Error loading the server configuration file: {e}")
 
     async def get_tools(self) -> list:
+        """
+        Returns a list of all the tools available in all the started client sessions. 
+
+        Returns:
+            A list of all the available tools.
+        """
+
         tools = []
 
         unique_sessions = set(self.sessions.values())
@@ -83,6 +106,16 @@ class MCPManager:
         return tools
     
     async def call_tool(self, tool_name, tool_args) -> ToolCallResponse:
+        """
+        Executes a tool by specified name and arguments.
+        
+        Args:
+            tool_name: The name of the tool that will be executed.
+            tool_args: The required arguments of the tool that will be executed.
+        Returns:
+            The tool response - the content and logs.
+        """
+
         session = self.sessions[ItemKey(ItemType.TOOL, tool_name)]
 
         if not session:
@@ -121,6 +154,17 @@ class MCPManager:
             print(f"Error: {e}")
 
     async def _get_session(self, type: ItemType, name: str) -> ClientSession:
+        """
+        Returns the corresponding session to the specified server primitive item type (tool, resource).
+
+        Args:
+            type: The type of the server primitive.
+            name: The session name.
+
+        Returns:
+            A client session.
+        """
+
         session = self.sessions[ItemKey(type, name)]
 
         if not session:
@@ -129,6 +173,14 @@ class MCPManager:
         return session
         
     async def _notify_server_connection_successful(self, server_name, session):
+        """
+        Notifies when a successful connection to a server is established by listing all its available primitives.
+
+        Args:
+            server_name: The sever name to which a connection is established.
+            session: The client session corresponding to the server.
+        """
+
         print(f"\n- MCP Server: {server_name} successfully connected")
 
         try:

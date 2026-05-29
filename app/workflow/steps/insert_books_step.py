@@ -21,6 +21,16 @@ class InsertBooksStep:
         self.mcp = mcp
 
     async def run(self, books: list[Book]):
+        """
+        Executes a workflow step that inserts a list of books in the database.
+    
+        Args:
+            books: A list of books for inserting in the database.
+
+        Returns:
+            None
+        """
+        
         available_tools = await self.mcp.get_tools()
 
         responses: list[OpenAIResponse] = []

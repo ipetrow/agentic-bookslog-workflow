@@ -24,6 +24,13 @@ class ExtractBooksDataStep:
         self.mcp = mcp
 
     async def run(self) -> dict:
+        """
+        Executes a workflow step that extracts books' data from a file.
+        
+        Returns:
+            A list of extracted books.
+        """
+
         resource_name = os.path.basename(RESOURCE_URI)
         resource_base64 = await self.mcp.get_resource(RESOURCE_URI)
 

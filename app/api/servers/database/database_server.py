@@ -78,7 +78,7 @@ def insert_books(books: list[Book]) -> None:
     Insert new books in the database.
 
     Args: 
-        list[Book]: A list with all the books to be inserted.
+        books: A list with all the books to be inserted.
 
     Returns:
         None
