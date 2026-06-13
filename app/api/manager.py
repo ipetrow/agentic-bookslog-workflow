@@ -1,5 +1,8 @@
-import json
 from contextlib import AsyncExitStack
+import json
+import os
+
+
 
 from mcp import ClientSession, StdioServerParameters
 from mcp.client.stdio import stdio_client
@@ -82,7 +85,8 @@ class MCPManager:
                 data = json.load(file)
             servers = data.get("servers", {})
             for server_name, server_config in servers.items():
-                await self._connect_to_server(server_name, server_config)
+                server_config_updated = await self._resolve_server_config(server_config)
+                await self._connect_to_server(server_name, server_config_updated)
 
         except Exception as e:
             raise RuntimeError(f"Error loading the server configuration file: {e}")
@@ -197,3 +201,26 @@ class MCPManager:
                 print(f"\n----- Prompts: ", [prompt.name for prompt in prompts_response.prompts])
         except Exception as e:
             print(f"Error {e}")
+
+    async def _resolve_server_config(self, server_config: dict) -> dict:
+        config = server_config.copy()
+
+        env = {}
+
+        for key, value in config.get("env", {}).items():
+            if isinstance(value, str) and value.startswith("${") and value.endswith("}"):
+                env_variable_name = value[2:-1]
+
+                try:
+                    env[key] = os.environ[env_variable_name]
+                except KeyError:
+                    raise RuntimeError(
+                        f"Required environment variable '{env_variable_name}' is missing."
+                    )
+            else:
+                env[key] = value
+
+        if env:
+            config["env"] = env
+
+        return config

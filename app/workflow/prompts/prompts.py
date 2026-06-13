@@ -26,7 +26,10 @@ def get_insert_books_prompt(books: list[Book]) -> str:
     prompt = (
         "Please add the following new books in the database:\n"
         + "\n".join(books_list)
-        + "\n\nAnswer guidance: If the adding task is successful, include in your answer the titles of the added books."
+        + "\n\nExecution guidance:"
+        + "\n- If you need a function call provide a short reasoning why you need it."
+        + "\n- Ensure that the books insertion has been successful."
+        + "\n\nAnswer guidance: Communicate clearly whether the task has been successful or not. If yes, include in your answer the titles of the added books."
     )
 
     return prompt
