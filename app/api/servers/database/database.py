@@ -74,8 +74,9 @@ class Database:
     def delete_books_data(self) -> None:
         """
         Delete the books data.
-            Returns:
-                None
+
+        Returns:
+            None
         """
 
         query = "DELETE FROM books"
