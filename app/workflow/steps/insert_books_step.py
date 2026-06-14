@@ -53,7 +53,7 @@ class InsertBooksStep:
             if not tool_call: # no function calls - agentic loop termination
                 responses.append(response.response)
                 break
-            
+                
             tool_result: ToolCallResponse = await self.mcp.call_tool(tool_name = tool_call.tool_name, tool_args = tool_call.tool_args)
 
             responses.append(tool_result.log)
@@ -64,5 +64,5 @@ class InsertBooksStep:
             )
         else:
             raise WorkflowExecutionError("The maximum allowed interactions with the agent has been reached!") 
-            
+        
         return "\n".join(responses)

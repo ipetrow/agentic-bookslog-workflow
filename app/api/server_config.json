@@ -6,7 +6,10 @@
                 "run", 
                 "-m",
                 "app.api.servers.database.database_server"
-            ]
+            ],
+            "env": {
+                "DATABASE_PATH": "${DATABASE_PATH}"
+            }
         },
         "files": {
             "command": "uv",

@@ -1,5 +1,5 @@
 # Project Overview
-This project presents a multi-step agentic AI workflow built around MCP, OpenAI Responses API, SQLite and Python. It demonstrates the utilization of an LLM, provided with external capabilities (e.g., tools and resources), for automating document data retrieval and the further application of the extracted data.
+This project presents a multi-step agentic AI workflow built around MCP, OpenAI Responses API, SQLite and Python. It demonstrates the utilization of an LLM, provided with external capabilities (e.g., tools and resources), for automating document data retrieval and the further application of the extracted data. Furthermore, it explored the topic of evaluation testing for ensuring the accuracy and reliability of the workflow.
 
 # Use Case
 The workflow aims to ease the update of a user's digital record/log of owned books. The books' information is automatically extracted from a receipt pdf document and, in a subsequent step, inserted into a dedicated database, functioning as a personal library.
@@ -23,6 +23,7 @@ The project consists of the following directories:
 - `workflow`: Contains the workflow steps and their logical execution sequence. 
 - `api`: Contains the MCP Client-Server logic - client-server session creation and management, handling server primitives access.
 - `llm`: Contains the logic related with the model - api calls, formatting the data passed to the model. 
+- `tests`: Constains the evalution tests ensuring the accurancy and reliability of the workflow and its two main steps. 
 
 # Prerequisites
 - Installed Python `uv` package and project management tool. A basic understanding of how the tool works would be helpful for a better insight of how the project is set up and executed.
@@ -66,6 +67,8 @@ One of the main objectives for the project was to decouple the `llm` layer from 
 ## Database
 It is a simplistic sqlite database named ***bookslog***, consisting of only one table - ***books***. The main idea is to store books information - ***isbn***, ***title***, ***author*** and ***number of pages***. For convenience and simplicity of the demo, a book can have only one author stored as a string.
 
+The database path for the production application is set in the `.env` file and loaded right at the beginning of the application start.
+
 # Running the Project
 ## Setup
 1. Clone the repository: `git@github.com:ipetrow/agentic_bookslog.git`.
@@ -77,22 +80,21 @@ It is a simplistic sqlite database named ***bookslog***, consisting of only one 
 ## Execution
 Start the MCP Client and connect to the MCP Server by: `uv run python -m app`.
 
+# Evaluation Tests
+There are 3 evaluation tests implemented
+1. `test_input_books_workflow.py`: evaluates the output of the whole workflow.
+2. `test_extract_books_data_step.py`: evaluates in isolation the step extracting the book data from the file.
+3. `test_insert_books_step.py`: evaluates in isolation the step inserting the book data to the database.
+
+## Implementation Details
+- The implementation utilizes the functionalities and capabilities provided by the Python `pytest` library.
+- The tests are working with a dedicated test database `tests/evals/bookslog.db` separate from the production database.
+- The database path is set in the `.env.test` file. The configuration is handled in the `tests/conftest.py`.
+
+## Execution
+- For executing one of the tests: `uv run python -m pytest tests/evals/test_extract_books_data_step.py`.
+- For executing all tests: `uv run python -m pytest`.
+
 # References
-The project is an evolution of two earlier repositories where I explored the [MCP Database Manipulation](https://github.com/ipetrow/mcp-database-demo) and the [File Data Retrieval](https://github.com/ipetrow/mcp-files-demo) topics in isolation.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+1. The project is an evolution of two earlier repositories where I explored the [MCP Database Manipulation](https://github.com/ipetrow/mcp-database-demo) and the [File Data Retrieval](https://github.com/ipetrow/mcp-files-demo) topics in isolation.
+2. Python [pytest](https://docs.pytest.org) library official documentation.
