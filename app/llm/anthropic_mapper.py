@@ -11,13 +11,13 @@ class AnthropicContextMapper:
 
     async def _serialize_content_items(self, content_items: list) -> list:
         """
-        Maps the context's content items to to the format compatible with OpenAI Responses API.
+        Maps the context's content items to to the format compatible with Anthropic Claude Messages API.
         
         Args:
             content_items: The context's content items for mapping.
 
         Returns:
-            A list of mapped content items compatible with the OpenAI Responses API.
+            A list of mapped content items compatible with the Anthropic Claude Messages API.
         """
 
         serialized_content_items = []

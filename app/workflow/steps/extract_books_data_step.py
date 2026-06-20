@@ -57,8 +57,4 @@ class ExtractBooksDataStep:
         if not books:
             raise WorkflowNoModelResponseError("No books were successfully extracted!")
         
-        print(f"Extracted books:")
-        for book in books:
-            print(f"Book name: {book.title}")
-
         return books

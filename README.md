@@ -57,7 +57,7 @@ There are two MCP Servers, each one with its own responsibility:
 The information for connecting to the servers is extracted and read from the `server_config.json` file.
 
 ## LLM
-One of the main objectives for the project was to decouple the `llm` layer from the `api` and `workflow` layers making the workflow steps LLM agnostic. This is achieved with the help of a mapping class which handles the LLM API specifics. This approach ease the migration process to another LLM provider.
+One of the main objectives for the project was to decouple the `llm` layer from the `api` and `workflow` layers making the workflow steps LLM agnostic. This is achieved with the help of a mapping class which handles the LLM API specifics. This approach eases the migration process to another LLM provider.
 
 The flexibility in regards to the choice of an LLM provider is presented in the project by adding the option to execute the workflow using the *OpenAI Responses API* **or** the *Anthropic Claude Messages API*.
 
@@ -65,7 +65,7 @@ The flexibility in regards to the choice of an LLM provider is presented in the 
 The OpenAI `gpt-5-mini` model is used from Azure - The GPT model was deployed in Azure and the Azure OpenAI API key used for the connection with the LLM. This integration allows the User to interact on an abstract level with the tools exposed from the MCP Server.
 
 Two main files contain the logic related with the OpenAI Responses API:
-- `app/llm/openai_service.py`: Makes the request to the OpenAI Responses API.
+- `app/llm/openai_service.py`: Makes a request to the OpenAI Responses API.
 - `app/llm/openai_mapper.py`: Contains the mapper class which handles the LLM API specifics.
 
 This layer further uses the
@@ -73,15 +73,18 @@ This layer further uses the
 - OpenAI Responses API: An interface for interacting with the LLM.
 
 ### Anthropic Claude Messages API
-TODO
+The OpenAI `claude-sonnet-4-6` model is used from Azure. Similarly to the OpenAI model, the Claude model was deployed in Azure and the Azure Anthropic API key used for the connection with the LLM.
 
 Two main files contain the logic related with the Anthropic Claude Messages API:
-- `app/llm/anthropic_service.py`: Makes the request to the Anthropic Claude Messages API.
+- `app/llm/anthropic_service.py`: Makes a request to the Anthropic Claude Messages API.
 - `app/llm/anthropic_mapper.py`: Contains the mapper class which handles the LLM API specifics.
 
 This layer further uses the
 - Anthropic Python SDK: Provides access to the Anthropic REST API.
 - Anthropic Claude Messages API: An interface for interacting with the LLM.
+
+### Switching between GPT and Claude
+By default, the workflow uses OpenAI GPT. For switching to Anthropic Claude, modify the model initialization in `__main__.py` - change the `llm` instance to be of type `AnthropicService` instead of `OpenAIService`.
 
 ## Database
 It is a simplistic sqlite database named ***bookslog***, consisting of only one table - ***books***. The main idea is to store books information - ***isbn***, ***title***, ***author*** and ***number of pages***. For convenience and simplicity of the demo, a book can have only one author stored as a string.

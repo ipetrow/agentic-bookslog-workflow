@@ -1,6 +1,5 @@
 from dataclasses import dataclass
 from typing import Union
-from enum import Enum
 
 @dataclass
 class TextContent:
