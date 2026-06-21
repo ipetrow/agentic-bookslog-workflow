@@ -9,7 +9,7 @@ from app.llm.models.models import (
     TextContent, 
     FileContent, 
 )
-from app.llm.models.openai_response import OpenAIResponse
+from app.llm.models.llm_response import LLMResponse
 
 from ..exceptions import WorkflowNoModelResponseError
 from ..prompts.prompts import EXTRACT_BOOK_DATA_PROMPT
@@ -42,13 +42,13 @@ class ExtractBooksDataStep:
                 ),
                 FileContent(
                     file_name=resource_name,
-                    file_base64=resource_base64
+                    file_data=resource_base64
                 )
             ]
         )
 
         books = []
-        books_response: OpenAIResponse = await self.model.process(context_item=context_item)
+        books_response: LLMResponse = await self.model.process(context_item=context_item)
         books_dict = json.loads(books_response.response)
         
         # TODO Integrate the pydantic module 
@@ -56,5 +56,5 @@ class ExtractBooksDataStep:
 
         if not books:
             raise WorkflowNoModelResponseError("No books were successfully extracted!")
-
+        
         return books

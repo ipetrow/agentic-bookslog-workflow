@@ -7,7 +7,7 @@ from app.llm.models.models import (
     TextContent, 
     ContextToolOutputItem
 )
-from app.llm.models.openai_response import OpenAIResponse
+from app.llm.models.llm_response import LLMResponse
 
 from ..exceptions import WorkflowExecutionError
 from ..prompts.prompts import get_insert_book_prompt, get_insert_books_prompt
@@ -33,7 +33,7 @@ class InsertBooksStep:
         
         available_tools = await self.mcp.get_tools()
 
-        responses: list[OpenAIResponse] = []
+        responses: list[LLMResponse] = []
 
         prompt = get_insert_books_prompt(books)
 
@@ -47,10 +47,10 @@ class InsertBooksStep:
         )
 
         for _ in range(MAX_STEPS):
-            response: OpenAIResponse = await self.model.process(context_item=context_item, available_tools=available_tools)
+            response: LLMResponse = await self.model.process(context_item=context_item, available_tools=available_tools)
 
-            tool_call = response.function_call
-            if not tool_call: # no function calls - agentic loop termination
+            tool_call = response.tool_use
+            if response.is_final: # no function calls - agentic loop termination
                 responses.append(response.response)
                 break
                 

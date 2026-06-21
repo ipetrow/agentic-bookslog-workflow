@@ -4,8 +4,8 @@ import os
 from openai import OpenAI
 
 from .base_service import LLMService
-from .models.openai_response import FunctionCall
-from .models.openai_response import OpenAIResponse
+from .models.llm_response import ToolUse
+from .models.llm_response import LLMResponse
 from .models.models import ContextRoleItem, ContextItem, ContextToolOutputItem
 from .openai_mapper import OpenAIContextMapper
 
@@ -32,7 +32,7 @@ class OpenAIService(LLMService):
         self.adapter = OpenAIContextMapper()
         self.context = []
 
-    async def process(self, context_item: ContextItem, available_tools: list = None) -> OpenAIResponse:
+    async def process(self, context_item: ContextItem, available_tools: list = None) -> LLMResponse:
         """
         Handles a request to the OpenAI API.
 
@@ -54,7 +54,7 @@ class OpenAIService(LLMService):
 
         serialize_tools = await self.adapter.serialize_tools(available_tools) if available_tools else None
 
-        function_call: FunctionCall = None       
+        function_call: ToolUse = None       
         assisstent_response_text = None
         response = self.openai.responses.create(
                 model=MODEL, 
@@ -68,7 +68,7 @@ class OpenAIService(LLMService):
             
             # handle text/message if present
             if output_item.type == "message":
-                for content_item in output_item.content: # if the response contains multiple "output_text" items
+                for content_item in output_item.content:
                     if content_item.type == "output_text":
                         assisstent_response_text = content_item.text
                 
@@ -80,7 +80,7 @@ class OpenAIService(LLMService):
                         }
                     )
             elif output_item.type == "function_call": # handle a tool call request if present
-                function_call = FunctionCall(
+                function_call = ToolUse(
                     tool_name = output_item.name, 
                     tool_args = json.loads(output_item.arguments or "{}"),
                     call_id = output_item.call_id
@@ -95,4 +95,7 @@ class OpenAIService(LLMService):
                     }
                 )
        
-        return OpenAIResponse(response = assisstent_response_text, function_call = function_call)
+        return LLMResponse(
+            response = assisstent_response_text, 
+            tool_use = function_call
+        )

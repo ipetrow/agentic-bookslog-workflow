@@ -8,11 +8,11 @@ class TextContent:
 @dataclass
 class FileContent:
     file_name: str
-    file_base64: str
+    file_data: str
 
 Content = Union[
     TextContent,
-    FileContent,
+    FileContent
 ]
 
 class ContextItem:

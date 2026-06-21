@@ -13,8 +13,6 @@ from tests.data.books import BOOKS
 @pytest.mark.asyncio
 async def test_extract_books_data_step():
 
-    print(f"DEBUG: test_extract_books_data_step {os.environ["DATABASE_PATH"]}")
-
     llm = OpenAIService()
 
     async with MCPManager() as mcp:
