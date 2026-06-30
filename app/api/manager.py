@@ -81,7 +81,7 @@ class MCPManager:
         """Reads the server configuration files and established all the MCP Client-Server connections."""
 
         try:
-            with open("app/api/server_config.json", "r") as file:
+            with open("app/api/mcp.json", "r") as file:
                 data = json.load(file)
             servers = data.get("servers", {})
             for server_name, server_config in servers.items():
