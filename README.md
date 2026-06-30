@@ -54,7 +54,7 @@ There are two MCP Servers, each one with its own responsibility:
 - Server resource: A PDF file representing a receipt for 3 situated in the same folder.
 - Server primitives: A single resource `file://receipts/receipt-001.pdf`.
 
-The information for connecting to the servers is extracted and read from the `server_config.json` file.
+The information for connecting to the servers is extracted and read from the `mcp.json` file.
 
 ## LLM
 One of the main objectives for the project was to decouple the `llm` layer from the `api` and `workflow` layers making the workflow steps LLM agnostic. This is achieved with the help of a mapping class which handles the LLM API specifics. This approach eases the migration process to another LLM provider.
